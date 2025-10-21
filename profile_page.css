@@ -1,0 +1,372 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  background: white;
+  padding: 25px 35px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+header h2 {
+  margin: 0;
+}
+
+form.profile-section {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.left {
+  flex: 1;
+  text-align: center;
+  border-right: 1px solid #ccc;
+  padding-right: 20px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #dcdcdc;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+}
+
+.input {
+  display: block;
+  width: 90%;
+  padding: 8px;
+  margin: 8px auto;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.stats input {
+  width: 50px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.stat-labels {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+}
+
+.right {
+  flex: 2;
+  padding-left: 20px;
+}
+
+.right h3 {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.right label {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.right input,
+.right textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.update-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.right h3 {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+  margin: 25px 0 15px;
+}
+
+.right label {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.right input,
+.right textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+textarea {
+  resize: vertical;
+}
+.privacy-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.switch-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.switch-label span {
+  max-width: 80%;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #3f51b5;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background: linear-gradient(to right, #74ebd5, #acb6e5); /* Light blue to purple gradient */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.container {
+  background: rgba(255, 255, 255, 0.95);  /* Slightly transparent white */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  padding: 25px 35px;
+  margin: 40px 0;
+  width: 90%;
+  max-width: 900px;
+}
+input, textarea {
+  background-color: #f7f9fc;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+input:focus, textarea:focus {
+  border-color: #3f51b5;
+  outline: none;
+  background-color: #ffffff;
+}
+/* Apply colorful gradient border and smooth input styles */
+input, textarea, select {
+  background-color: #f9fafe;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 0 1px #ccc;
+}
+
+/* On focus, show colorful border */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border: 2px solid #6a11cb;
+  box-shadow: 0 0 10px rgba(106, 17, 203, 0.3);
+  background-color: #ffffff;
+}
+
+/* Customize the placeholder text */
+input::placeholder,
+textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Make disabled/readonly inputs look lighter */
+input[readonly] {
+  background-color: #eaeaea;
+  color: #777;
+  border: 2px solid #dcdcdc;
+}
+/* Full page background */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background: linear-gradient(to right, #74ebd5, #acb6e5);  /* Blue to lavender */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Profile card container */
+.container {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+  padding: 30px;
+  margin: 40px 0;
+  width: 90%;
+  max-width: 900px;
+}
+
+/* Left panel (avatar and stats) */
+.left {
+  background-color: #e3f2fd;  /* Soft blue */
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Personal Info section */
+.right {
+  padding-left: 20px;
+  background-color: #f3e5f5; /* Light lavender */
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Section Headings */
+.right h3 {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #333;
+}
+
+/* Medical Info specific style */
+.right h3:nth-of-type(2) { /* Second heading (Medical Info) */
+  background-color: #e0f7fa; /* Teal background */
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 30px;
+}
+
+/* Privacy & Security section background */
+.privacy-option {
+  background-color: #f0f0f0;  /* Soft grey */
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+#editBtn {
+  background-color: #6200ea;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#editBtn:hover {
+  background-color: #3700b3;
+}
+.icon-avatar {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background-color: #e3f2fd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 80px;
+  color: #3f51b5;
+  border: 3px solid #3f51b5;
+}
+

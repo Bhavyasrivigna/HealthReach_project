@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthReach Login</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+    overflow: hidden;
+  }
+
+  .container {
+    background: #ffffff;
+    padding: 60px 40px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    min-height: 540px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+    z-index: 2;
+    position: relative;
+  }
+
+  h1 {
+    margin-bottom: 5px;
+    color: #20c997;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  h2.login-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 6px 0 12px 0;
+    color: #000;
+  }
+
+  p.subtitle {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 30px;
+  }
+
+  label {
+    text-align: left;
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 22px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    background-color: #f9f9f9;
+  }
+
+  input:focus, select:focus {
+    border-color: #20c997;
+    box-shadow: 0 0 6px rgba(32,201,151,0.6);
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #20c997;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+
+  button:hover {
+    background: #199d7d;
+    box-shadow: 0 5px 15px rgba(32,201,151,0.5);
+  }
+
+  button:active {
+    transform: scale(0.95);
+  }
+
+  /* Bubble navigation loader */
+  .bubble-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    gap: 20px;
+    z-index: 999;
+  }
+
+  .bubble {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #20c997;
+    transform: scale(0.5);
+    opacity: 0.7;
+    animation: grow 1s infinite alternate;
+  }
+
+  .bubble:nth-child(1) { animation-delay: 0s; }
+  .bubble:nth-child(2) { animation-delay: 0.2s; }
+  .bubble:nth-child(3) { animation-delay: 0.4s; }
+  .bubble:nth-child(4) { animation-delay: 0.6s; }
+
+  @keyframes grow {
+    from { transform: scale(0.5); opacity: 0.5; }
+    to   { transform: scale(1.4); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏥️HealthReach</h1>
+  <h2 class="login-title">Login</h2>
+  <p class="subtitle">Welcome back! Select your role and enter your credentials</p>
+
+  <label for="role">Role</label>
+  <select id="role" required>
+    <option value="">-- Select Role --</option>
+    <option value="admin">👨‍💼 Admin</option>
+    <option value="doctor">👩‍⚕️ Doctor</option>
+  </select>
+
+  <label for="userid">ID Number</label>
+  <input type="text" id="userid" placeholder="Enter ID Number" required>
+
+  <button id="loginBtn">Sign In</button>
+</div>
+
+<!-- Bubble Loader -->
+<div class="bubble-loader" id="bubbleLoader">
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+</div>
+
+<script>
+  const loginBtn = document.getElementById('loginBtn');
+  const bubbleLoader = document.getElementById('bubbleLoader');
+
+  loginBtn.addEventListener('click', () => {
+    const role = document.getElementById('role').value;
+    const userId = document.getElementById('userid').value;
+
+    if (!role || !userId) {
+      alert("⚠️ Please select role and enter ID Number!");
+      return;
+    }
+
+    const hasLetter = /[A-Za-z]/.test(userId);
+    const hasNumber = /[0-9]/.test(userId);
+
+    if (hasLetter && hasNumber) {
+      // Hide form and show loader
+      document.querySelector('.container').style.display = "none";
+      bubbleLoader.style.display = "flex";
+
+      // After 3 seconds → navigate
+      setTimeout(() => {
+        if (role === "admin") {
+          window.location.href = "adminDashboard.html";
+        } else if (role === "doctor") {
+          window.location.href = "doctorDashboard.html";
+        }
+      }, 3000);
+
+    } else {
+      alert("❌ ID must contain both letters and numbers!");
+    }
+  });
+</script>
+</body>
+</html>
+</html>
+

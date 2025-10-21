@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Update Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+   header h2 {
+      font-size: 28px;
+      font-weight: 600;
+    }
+    #editBtn {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    #editBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+   .profile-section {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 40px;
+      padding: 40px;
+    }
+    .left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .avatar-preview {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      margin-bottom: 10px;
+    }
+    .avatar-preview i {
+      font-size: 80px;
+      color: white;
+    }
+    .left .input {
+      width: 100%;
+      padding: 12px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+    .left .input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .stats input {
+      width: 100%;
+      padding: 15px 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      background: #f8f9fa;
+      color: #667eea;
+    }
+    .stat-labels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      width: 100%;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .stat-labels span {
+      font-size: 13px;
+      color: #666;
+      font-weight: 500;
+    }
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .right h3 {
+      color: #667eea;
+      font-size: 22px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .right h3:first-child {
+      margin-top: 0;
+    }
+    .right label {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .right input[type="text"],
+    .right input[type="email"],
+    .right input[type="date"],
+    .right textarea {
+      width: 100%;
+      padding: 12px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+    .right input:focus,
+    .right textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+    }
+    .right textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    .privacy-option {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    .switch-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+   .switch-label span {
+      flex: 1;
+    }
+    .switch-label strong {
+      display: block;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .switch-label small {
+      color: #666;
+      font-size: 13px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin-left: 20px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+    }
+   input:checked + .slider {
+      background-color: #667eea;
+    }
+  input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    .slider.round {
+      border-radius: 34px;
+    }
+    .slider.round:before {
+      border-radius: 50%;
+    }
+    .update-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .update-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    @media (max-width: 968px) {
+      .profile-section {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h2>My Profile</h2>
+      <button id="editBtn">Edit</button>
+    </header>
+    <form class="profile-section">
+      <div class="left">
+        <div class="avatar-preview icon-avatar" id="avatarCircle">
+          <span id="avatarLetter" style="font-size: 60px; font-weight: 700; color: white;"></span>
+        </div>
+        <input type="text" class="input" name="username" value="bathulabhavyasrivigna" readonly>
+        <input type="email" class="input" name="email" value="bathulabhavyasrivigna@gmail.com" readonly>
+        <div class="stats">
+          <input type="text" name="rating" value="4.8" readonly>
+          <input type="text" name="patients" value="12" readonly>
+          <input type="text" name="visits" value="3" readonly>
+        </div>
+        <div class="stat-labels">
+          <span>Rating</span>
+          <span>Patients</span>
+          <span>Visits</span>
+        </div>
+      </div>
+      <div class="right">
+        <h3>Personal Information</h3>
+
+        <label>Full Name</label>
+        <input type="text" name="full_name" value="bathulabhavyasrivigna">
+
+        <label>Phone Number</label>
+        <input type="text" name="phone" placeholder="Enter phone number">
+
+        <label>Date of Birth</label>
+        <input type="date" name="dob">
+
+        <label>Address</label>
+        <textarea name="address" placeholder="Enter address"></textarea>
+        <h3>Medical Information</h3>
+        <label>Blood Type</label>
+        <input type="text" name="blood_type" placeholder="e.g., O+, A-">
+        <label>Emergency Contact Number</label>
+        <input type="text" name="emergency_contact" placeholder="Enter emergency contact number">
+        <label>Any Allergies</label>
+        <textarea name="allergies" placeholder="List any known allergies..."></textarea>
+        <label>Current Medications</label>
+        <textarea name="medications" placeholder="List current medications and dosages"></textarea>
+        <h3>Privacy & Security</h3>
+        <div class="privacy-option">
+          <label class="switch-label">
+            <span>
+              <strong>Share location in emergencies</strong><br>
+              <small>Allow emergency services to access your location</small>
+            </span>
+            <label class="switch">
+              <input type="checkbox" name="share_location" checked>
+              <span class="slider round"></span>
+            </label>
+          </label>
+        </div>
+        <div class="privacy-option">
+          <label class="switch-label">
+            <span>
+              <strong>Medical data sharing</strong><br>
+              <small>Share medical history with healthcare providers</small>
+            </span>
+            <label class="switch">
+              <input type="checkbox" name="medical_sharing" checked>
+              <span class="slider round"></span>
+            </label>
+          </label>
+        </div>
+        <button type="submit" class="update-btn">Update Profile</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    // Extract username from email and set it on page load
+    window.onload = () => {
+      const emailInput = document.querySelector('input[name="email"]');
+      const usernameInput = document.querySelector('input[name="username"]');
+      const fullNameInput = document.querySelector('input[name="full_name"]');
+      const avatarLetter = document.getElementById('avatarLetter');      
+      if (emailInput && emailInput.value) {
+        // Extract the part before @ from email
+        const username = emailInput.value.split('@')[0];   
+        // Set username and full name
+        if (usernameInput) usernameInput.value = username;
+        if (fullNameInput) fullNameInput.value = username; 
+        // Set the first letter in the avatar circle (uppercase)
+        if (avatarLetter && username) {
+          avatarLetter.textContent = username.charAt(0).toUpperCase();
+        }
+      }
+      // Disable all fields by default
+      document.querySelectorAll('input, textarea, select').forEach(input => {
+        input.disabled = true;
+      });
+    };
+    const editBtn = document.getElementById('editBtn');
+    let isEditable = false;
+    editBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      isEditable = !isEditable;
+      const inputs = document.querySelectorAll('input, textarea, select');
+      inputs.forEach(input => {
+        // Keep username and email always readonly
+        if (input.name === 'username' || input.name === 'email') {
+          input.disabled = true;
+        } else {
+          input.disabled = !isEditable;
+        }
+      });
+      editBtn.textContent = isEditable ? 'Save' : 'Edit';
+    });
+    // Handle form submission
+    document.querySelector('.profile-section').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (isEditable) {
+        alert('Profile updated successfully!');
+        editBtn.click(); // Toggle back to view mode
+      }
+    });
+  </script>
+</body>
+</html>

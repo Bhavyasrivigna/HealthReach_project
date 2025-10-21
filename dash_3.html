@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Appointment Dashboard</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh; padding:20px; color:#2d3748;
+    }
+    .container { max-width:1400px; margin:0 auto; }
+    .header {
+      background: linear-gradient(90deg,#667eea 0%,#764ba2 100%);
+      color:#fff; padding:30px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12);
+      margin-bottom:20px; text-align:center;
+    }
+    .header h1 { font-size:32px; margin-bottom:6px; }
+    .header p { color:#e6eefc; font-size:14px; }
+
+    .controls {
+      background:#fff; padding:18px; border-radius:12px; display:flex; gap:12px;
+      align-items:center; justify-content:space-between; box-shadow:0 6px 12px rgba(0,0,0,0.08);
+      flex-wrap:wrap; margin-bottom:18px;
+    }
+    .filter-buttons { display:flex; gap:8px; flex-wrap:wrap; }
+    .filter-btn {
+      padding:8px 14px; border-radius:8px; border:2px solid #e2e8f0; background:#fff;
+      cursor:pointer; font-weight:600; color:#4a5568; transition:all .18s ease;
+    }
+    .filter-btn.active { background:#667eea; color:#fff; border-color:#667eea; box-shadow:0 6px 12px rgba(102,126,234,.18); }
+
+    .new-appointment-btn {
+      padding:10px 18px; border-radius:8px; background:#48bb78; color:#fff; border:none; cursor:pointer; font-weight:700;
+      box-shadow:0 6px 12px rgba(72,187,120,.16);
+    }
+
+    .doctor-section {
+      background:#fff; padding:20px; border-radius:12px; margin-bottom:22px; box-shadow:0 8px 20px rgba(0,0,0,.06); position:relative; overflow:hidden;
+    }
+    .doctor-section::before {
+      content:""; position:absolute; left:0; top:0; width:100%; height:6px; background:linear-gradient(90deg,#667eea 0%,#48bb78 100%);
+    }
+    .doctor-header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-bottom:12px; border-bottom:1px solid #eef2f7; }
+    .doctor-info h2 { font-size:20px; }
+    .doctor-info p { color:#718096; font-size:13px; }
+
+    .doctor-stats { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .stat-badge { padding:6px 12px; border-radius:16px; font-weight:700; font-size:13px; }
+    .stat-badge.pending { background:#fff7ed; color:#c87c13; }
+    .stat-badge.confirmed { background:#ebf8ff; color:#2b6cb0; }
+    .stat-badge.completed { background:#f0fff4; color:#2f855a; }
+
+    .appointments-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); margin-top:14px; }
+    .appointment-card {
+      background:#f8fafc; border:1px solid #e6eef7; border-radius:10px; padding:14px; transition:all .18s ease;
+    }
+    .appointment-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.06); border-color:#cfe0ff; }
+
+    .appointment-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px; }
+    .patient-name { font-weight:800; color:#2d3748; }
+    .status-badge { padding:6px 12px; border-radius:16px; font-weight:800; font-size:12px; text-transform:uppercase; }
+
+    .status-badge.pending { background:#f39c12; color:#fff; }
+    .status-badge.confirmed { background:#3182ce; color:#fff; }
+    .status-badge.completed { background:#38a169; color:#fff; }
+    .status-badge.cancelled { background:#e53e3e; color:#fff; }
+
+    .detail-row { font-size:13px; color:#4a5568; margin-bottom:6px; display:flex; gap:8px; align-items:center; }
+    .detail-row strong { color:#2d3748; min-width:66px; }
+
+    .appointment-actions { display:flex; gap:8px; margin-top:10px; }
+    .action-btn { flex:1; padding:8px 10px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+    .confirm-btn { background:#3182ce; color:#fff; }
+    .complete-btn { background:#38a169; color:#fff; }
+    .cancel-btn { background:#e53e3e; color:#fff; }
+
+    .no-appointments { text-align:center; padding:46px 12px; color:#718096; font-size:16px; }
+
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; }
+    .modal.active { display:flex; }
+    .modal-content { background:#fff; padding:24px; border-radius:12px; width:640px; max-width:94%; max-height:90vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+    .modal-header h2 { font-size:20px; margin-bottom:8px; }
+    .form-group { margin-bottom:12px; }
+    .form-group label { display:block; font-weight:700; margin-bottom:6px; font-size:13px; color:#2d3748; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6eef7; font-size:14px; }
+    .form-actions { display:flex; gap:12px; margin-top:12px; }
+    .submit-btn { background:#667eea; color:#fff; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; flex:1; }
+    .cancel-modal-btn { background:#f1f5f9; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; flex:1; }
+
+    @media (max-width:760px) {
+      .doctor-header { flex-direction:column; align-items:flex-start; gap:12px; }
+      .controls { flex-direction:column; align-items:stretch; }
+      .appointments-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Doctor Appointment Dashboard</h1>
+      <p>Manage and track all appointments across all doctors</p>
+    </div>
+
+    <div class="controls">
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="pending">Pending</button>
+        <button class="filter-btn" data-filter="confirmed">Confirmed</button>
+        <button class="filter-btn" data-filter="completed">Completed</button>
+      </div>
+      <button class="new-appointment-btn" id="openNewBtn">+ New Appointment</button>
+    </div>
+
+    <div id="dashboard-content">
+      <!-- dynamic content -->
+    </div>
+  </div>
+
+  <div id="appointmentModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h2 id="modalTitle">New Appointment</h2>
+      </div>
+      <form id="appointmentForm">
+        <div class="form-group">
+          <label for="doctor">Select Doctor *</label>
+          <select id="doctor" required>
+            <option value="">Choose a doctor...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="patientName">Patient Name *</label>
+          <input type="text" id="patientName" required placeholder="Enter patient name" />
+        </div>
+        <div class="form-group">
+          <label for="patientEmail">Patient Email</label>
+          <input type="email" id="patientEmail" placeholder="patient@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="patientPhone">Patient Phone</label>
+          <input type="tel" id="patientPhone" placeholder="(555) 123-4567" />
+        </div>
+        <div class="form-group">
+          <label for="appointmentDate">Appointment Date *</label>
+          <input type="date" id="appointmentDate" required />
+        </div>
+        <div class="form-group">
+          <label for="appointmentTime">Appointment Time *</label>
+          <input type="time" id="appointmentTime" required />
+        </div>
+        <div class="form-group">
+          <label for="reason">Reason for Visit</label>
+          <textarea id="reason" placeholder="Enter reason for appointment"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn">Create Appointment</button>
+          <button type="button" class="cancel-modal-btn" id="cancelModalBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase script (kept but optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ---------- Configuration: keep your supabase info if you want live syncing ----------
+    const SUPABASE_URL = 'https://wpqfsqcjwrvzvzbrkcub.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwcWZzcWNqd3J2enZ6YnJrY3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2MTkyMzMsImV4cCI6MjA3NjE5NTIzM30.NqaOldO0FyvFtI9yifKIgFFb9VQhuY9ceCCwUIpPJ_Y';
+
+    let supabase = null;
+    try {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (err) {
+      console.warn('Supabase init failed or not available; running in local-demo mode.');
+      supabase = null;
+    }
+
+    // ---------- Sample fallback data (used if Supabase unavailable or empty) ----------
+    const sampleDoctors = [
+      { id: 'd1', name: 'Dr. Emma Carter', specialization: 'Cardiologist' },
+      { id: 'd2', name: 'Dr. Michael Lee', specialization: 'Dermatologist' },
+      { id: 'd3', name: 'Dr. Olivia Patel', specialization: 'Pediatrician' }
+    ];
+
+    const sampleAppointments = [
+      { id: 'a1', doctor_id: 'd1', patient_name: 'John Smith', patient_email:'john@example.com', patient_phone:'(555) 111-2222', appointment_date:'2025-10-18', appointment_time:'10:30', reason:'Chest pain', status:'pending', created_at: new Date().toISOString() },
+      { id: 'a2', doctor_id: 'd1', patient_name: 'Laura Green', appointment_date:'2025-10-20', appointment_time:'13:00', reason:'Heart check-up', status:'confirmed', created_at: new Date().toISOString() },
+      { id: 'a3', doctor_id: 'd1', patient_name: 'Mark Dawson', appointment_date:'2025-10-12', appointment_time:'09:15', reason:'Follow-up', status:'completed', created_at: new Date().toISOString() },
+
+      { id: 'a4', doctor_id: 'd2', patient_name: 'Sara Jones', appointment_date:'2025-10-10', appointment_time:'09:00', reason:'Acne treatment', status:'completed', created_at: new Date().toISOString() },
+      { id: 'a5', doctor_id: 'd2', patient_name: 'Ethan Brown', appointment_date:'2025-10-21', appointment_time:'11:00', reason:'Skin rash', status:'pending', created_at: new Date().toISOString() },
+
+      { id: 'a6', doctor_id: 'd3', patient_name: 'Lucy Parker', appointment_date:'2025-10-22', appointment_time:'10:00', reason:'Routine check-up', status:'confirmed', created_at: new Date().toISOString() },
+      { id: 'a7', doctor_id: 'd3', patient_name: 'Noah Kim', appointment_date:'2025-10-12', appointment_time:'14:30', reason:'Flu symptoms', status:'completed', created_at: new Date().toISOString() }
+    ];
+
+    // ---------- App state ----------
+    let allDoctors = [];
+    let allAppointments = [];
+    let currentFilter = 'all';
+
+    // ---------- Utilities ----------
+    function uid() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'id_' + Math.random().toString(36).slice(2, 9);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const d = new Date(dateString + 'T00:00:00'); // ensure treated as date
+      return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+    }
+    function formatTime(timeStr) {
+      if (!timeStr) return '-';
+      // show 12-hour AM/PM
+      const [hh, mm] = timeStr.split(':');
+      const date = new Date(); date.setHours(Number(hh), Number(mm || '0'));
+      return date.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+    }
+
+    // ---------- Data loading (attempt Supabase, fallback to sample data) ----------
+    async function loadDoctors() {
+      if (!supabase) {
+        allDoctors = sampleDoctors.slice();
+        populateDoctorSelect();
+        return allDoctors;
+      }
+      try {
+        const { data, error } = await supabase.from('doctors').select('*').order('name');
+        if (error || !data || data.length === 0) {
+          allDoctors = sampleDoctors.slice();
+        } else {
+          // Ensure id is string for consistency
+          allDoctors = data.map(d => ({ ...d, id: String(d.id) }));
+        }
+      } catch (err) {
+        console.warn('Error loading doctors from supabase, using sample:', err);
+        allDoctors = sampleDoctors.slice();
+      }
+      populateDoctorSelect();
+      return allDoctors;
+    }
+
+    async function loadAppointments() {
+      if (!supabase) {
+        allAppointments = sampleAppointments.slice();
+        return allAppointments;
+      }
+      try {
+        // Try to select appointments and include doctor if FK relationship exists
+        const { data, error } = await supabase
+          .from('appointments')
+          .select('*')
+          .order('appointment_date', { ascending: false });
+
+        if (error || !data || data.length === 0) {
+          allAppointments = sampleAppointments.slice();
+        } else {
+          // Normalize IDs & fields
+          allAppointments = data.map(a => ({
+            ...a,
+            id: String(a.id),
+            doctor_id: String(a.doctor_id)
+          }));
+        }
+      } catch (err) {
+        console.warn('Error loading appointments from supabase, using sample:', err);
+        allAppointments = sampleAppointments.slice();
+      }
+      return allAppointments;
+    }
+
+    // ---------- Render logic ----------
+    function groupAppointmentsByDoctor(appointments) {
+      const grouped = {};
+      appointments.forEach(appointment => {
+        const doctorId = appointment.doctor_id || 'unknown';
+        if (!grouped[doctorId]) {
+          const doctor = allDoctors.find(d => String(d.id) === String(doctorId)) || { id: doctorId, name: 'Unknown', specialization: '' };
+          grouped[doctorId] = { doctor, appointments: [] };
+        }
+        grouped[doctorId].appointments.push(appointment);
+      });
+      // sort doctors by name
+      return Object.values(grouped).sort((a,b) => (a.doctor.name || '').localeCompare(b.doctor.name || ''));
+    }
+
+    function getStatusCounts(appointments) {
+      return {
+        pending: appointments.filter(a => a.status === 'pending').length,
+        confirmed: appointments.filter(a => a.status === 'confirmed').length,
+        completed: appointments.filter(a => a.status === 'completed').length
+      };
+    }
+
+    function renderAppointmentCard(appointment) {
+      const canConfirm = appointment.status === 'pending';
+      const canComplete = appointment.status === 'confirmed';
+      const canCancel = appointment.status !== 'completed' && appointment.status !== 'cancelled';
+
+      return `
+        <div class="appointment-card" data-id="${appointment.id}">
+          <div class="appointment-header">
+            <div>
+              <div class="patient-name">${escapeHtml(appointment.patient_name || '—')}</div>
+              <div style="font-size:12px;color:#718096;margin-top:6px">${appointment.patient_email ? escapeHtml(appointment.patient_email) : ''}</div>
+            </div>
+            <div>
+              <div class="status-badge ${appointment.status}">${appointment.status}</div>
+            </div>
+          </div>
+
+          <div class="detail-row"><strong>Date:</strong> ${formatDate(appointment.appointment_date)}</div>
+          <div class="detail-row"><strong>Time:</strong> ${formatTime(appointment.appointment_time)}</div>
+          ${appointment.patient_phone ? `<div class="detail-row"><strong>Phone:</strong> ${escapeHtml(appointment.patient_phone)}</div>` : ''}
+          ${appointment.reason ? `<div class="detail-row"><strong>Reason:</strong> ${escapeHtml(appointment.reason)}</div>` : ''}
+
+          <div class="appointment-actions">
+            ${canConfirm ? `<button class="action-btn confirm-btn" data-action="confirm" data-id="${appointment.id}">Confirm</button>` : ''}
+            ${canComplete ? `<button class="action-btn complete-btn" data-action="complete" data-id="${appointment.id}">Complete</button>` : ''}
+            ${canCancel ? `<button class="action-btn cancel-btn" data-action="cancel" data-id="${appointment.id}">Cancel</button>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDashboard() {
+      const dashboardContent = document.getElementById('dashboard-content');
+
+      const filteredAppointments = currentFilter === 'all'
+        ? allAppointments.slice()
+        : allAppointments.filter(a => a.status === currentFilter);
+
+      if (!filteredAppointments || filteredAppointments.length === 0) {
+        dashboardContent.innerHTML = `<div class="no-appointments">No appointments found</div>`;
+        attachActionHandlers(); // ensure no errors on empty
+        return;
+      }
+
+      const grouped = groupAppointmentsByDoctor(filteredAppointments);
+
+      const html = grouped.map(group => {
+        const stats = getStatusCounts(group.appointments);
+        return `
+          <div class="doctor-section">
+            <div class="doctor-header">
+              <div class="doctor-info">
+                <h2>${escapeHtml(group.doctor.name || 'Unknown')}</h2>
+                <p>${escapeHtml(group.doctor.specialization || '')}</p>
+              </div>
+              <div class="doctor-stats">
+                ${stats.pending ? `<div class="stat-badge pending">${stats.pending} Pending</div>` : ''}
+                ${stats.confirmed ? `<div class="stat-badge confirmed">${stats.confirmed} Confirmed</div>` : ''}
+                ${stats.completed ? `<div class="stat-badge completed">${stats.completed} Completed</div>` : ''}
+              </div>
+            </div>
+            <div class="appointments-grid">
+              ${group.appointments.map(renderAppointmentCard).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      dashboardContent.innerHTML = html;
+      attachActionHandlers();
+    }
+
+    // Attach click handlers for confirm/complete/cancel buttons inside appointment cards
+    function attachActionHandlers() {
+      const buttons = document.querySelectorAll('.appointment-actions .action-btn');
+      buttons.forEach(btn => {
+        btn.onclick = (e) => {
+          const action = btn.dataset.action;
+          const id = btn.dataset.id;
+          if (!action || !id) return;
+          if (action === 'confirm') return updateAppointmentStatus(id, 'confirmed');
+          if (action === 'complete') return updateAppointmentStatus(id, 'completed');
+          if (action === 'cancel') return updateAppointmentStatus(id, 'cancelled');
+        };
+      });
+    }
+
+    // ---------- Update status (local + optional supabase) ----------
+    async function updateAppointmentStatus(appointmentId, newStatus) {
+      // Update locally
+      const idx = allAppointments.findIndex(a => String(a.id) === String(appointmentId));
+      if (idx === -1) { alert('Appointment not found'); return; }
+      allAppointments[idx].status = newStatus;
+      allAppointments[idx].updated_at = new Date().toISOString();
+
+      // Try to update on Supabase but don't fail UI if it errors
+      if (supabase) {
+        try {
+          const { error } = await supabase
+            .from('appointments')
+            .update({ status: newStatus, updated_at: new Date().toISOString() })
+            .eq('id', appointmentId);
+          if (error) console.warn('Supabase update error (status update):', error);
+        } catch (err) {
+          console.warn('Supabase update exception:', err);
+        }
+      }
+
+      renderDashboard();
+    }
+
+    // ---------- New appointment flow ----------
+    function openNewAppointmentModal() {
+      const modal = document.getElementById('appointmentModal');
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden','false');
+
+      // populate doctors into select
+      populateDoctorSelect();
+
+      // min date set to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('appointmentDate').min = tomorrow.toISOString().split('T')[0];
+    }
+    function closeNewAppointmentModal() {
+      const modal = document.getElementById('appointmentModal');
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden','true');
+      document.getElementById('appointmentForm').reset();
+    }
+
+    function populateDoctorSelect() {
+      const sel = document.getElementById('doctor');
+      if (!sel) return;
+      const current = sel.value;
+      sel.innerHTML = '<option value="">Choose a doctor...</option>' +
+        allDoctors.map(d => `<option value="${escapeHtml(String(d.id))}">${escapeHtml(d.name)}${d.specialization ? ' - ' + escapeHtml(d.specialization) : ''}</option>`).join('');
+      if (current) sel.value = current;
+    }
+
+    async function handleCreateAppointment(e) {
+      e.preventDefault();
+      const doctor_id = document.getElementById('doctor').value;
+      if (!doctor_id) { alert('Please select a doctor'); return; }
+      const patient_name = document.getElementById('patientName').value.trim();
+      if (!patient_name) { alert('Please enter patient name'); return; }
+      const patient_email = document.getElementById('patientEmail').value.trim();
+      const patient_phone = document.getElementById('patientPhone').value.trim();
+      const appointment_date = document.getElementById('appointmentDate').value;
+      const appointment_time = document.getElementById('appointmentTime').value;
+      const reason = document.getElementById('reason').value.trim();
+
+      const newAppt = {
+        id: uid(),
+        doctor_id: String(doctor_id),
+        patient_name,
+        patient_email,
+        patient_phone,
+        appointment_date,
+        appointment_time,
+        reason,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      // Add locally
+      allAppointments.unshift(newAppt);
+
+      // Try insert to Supabase (but don't block UI)
+      if (supabase) {
+        try {
+          const { error } = await supabase.from('appointments').insert([newAppt]);
+          if (error) console.warn('Supabase insert error:', error);
+        } catch (err) {
+          console.warn('Supabase insert exception:', err);
+        }
+      }
+
+      closeNewAppointmentModal();
+      renderDashboard();
+    }
+
+    // ---------- Filters ----------
+    function setupFilterButtons() {
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter || 'all';
+          renderDashboard();
+        });
+      });
+    }
+
+    // ---------- Small helper for safe HTML insertion ----------
+    function escapeHtml(str) {
+      if (str === undefined || str === null) return '';
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+
+    // ---------- Initialization ----------
+    async function init() {
+      // load data (supabase if configured, else sample)
+      await loadDoctors();
+      await loadAppointments();
+      setupFilterButtons();
+
+      // wire modal open/close & form submit
+      document.getElementById('openNewBtn').addEventListener('click', openNewAppointmentModal);
+      document.getElementById('cancelModalBtn').addEventListener('click', closeNewAppointmentModal);
+      document.getElementById('appointmentForm').addEventListener('submit', handleCreateAppointment);
+
+      // close modal on backdrop click
+      window.addEventListener('click', (e) => {
+        const modal = document.getElementById('appointmentModal');
+        if (e.target === modal) closeNewAppointmentModal();
+      });
+
+      renderDashboard();
+    }
+
+    // run
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthReach Login</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Segoe UI',sans-serif;}
+    body{
+      display:flex;justify-content:center;align-items:center;height:100vh;
+      background:#f8fafc;position:relative;overflow:hidden;
+    }
+    body::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,#ffffff 0%,#e0f2fe 25%,#dbeafe 50%,#ffffff 75%,#f0f9ff 100%);
+      background-size:400% 400%;animation:gradientShift 15s ease infinite;
+    }
+    @keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+    .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.4;animation:float 20s infinite ease-in-out;}
+    .orb1{width:500px;height:500px;background:linear-gradient(135deg,#3b82f6,#60a5fa);top:-150px;left:-150px;}
+    .orb2{width:400px;height:400px;background:linear-gradient(135deg,#2563eb,#3b82f6);bottom:-100px;right:-100px;animation-delay:5s;}
+    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(20px,-20px);}}
+    .container{
+      width:420px;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);
+      border-radius:28px;box-shadow:0 20px 60px rgba(59,130,246,0.15);
+      overflow:hidden;z-index:10;position:relative;transition:all .6s ease;
+    }
+    .header{background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);padding:40px 20px;text-align:center;}
+    .circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#fff,#e0f2fe);
+      display:flex;align-items:center;justify-content:center;margin:0 auto 15px;animation:pulse 2s infinite;}
+    .circle span{color:#3b82f6;font-size:2.2em;}
+    @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+    .header h1{color:white;font-size:2em;font-weight:700;}
+    .header p{color:#e0e7ff;}
+    .tabs{display:flex;justify-content:space-around;background:#f1f5f9;padding:10px;}
+    .tabs button{flex:1;padding:14px;border:none;border-radius:14px;background:transparent;font-weight:600;color:#64748b;cursor:pointer;}
+    .tabs button.active{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 20px rgba(59,130,246,.3);}
+    form{padding:35px 30px;background:white;}
+    .input-group{margin-bottom:20px;}
+    .input-group input{width:100%;padding:16px 20px;border:2px solid #e2e8f0;border-radius:14px;font-size:1em;outline:none;}
+    .input-group input:focus{border-color:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.1);}
+    .btn{width:100%;padding:16px;background:linear-gradient(135deg,#3b82f6,#2563eb);border:none;border-radius:14px;
+      color:white;font-size:1.05em;font-weight:700;cursor:pointer;transition:all .3s;}
+    .btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(59,130,246,0.4);}
+    .forgot-password{text-align:center;margin-top:24px;}
+    .forgot-password a{color:#3b82f6;text-decoration:none;font-weight:600;}
+
+    /* Overlay animations */
+    #loadingOverlay{
+      display:none;position:fixed;inset:0;background:rgba(248,250,252,0.97);
+      backdrop-filter:blur(10px);z-index:1000;flex-direction:column;align-items:center;justify-content:center;
+      animation:fadeIn .3s ease forwards;
+    }
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    .spinner{
+      border:5px solid #e0f2fe;border-top:5px solid #3b82f6;border-radius:50%;
+      width:70px;height:70px;animation:spin 1s linear infinite;margin-bottom:25px;
+    }
+    @keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+    .successText{
+      color:#16a34a;font-weight:700;font-size:22px;margin-top:10px;
+      opacity:0;transform:translateY(10px);transition:all .6s ease;
+    }
+    .successText.show{opacity:1;transform:translateY(0);}
+    .fadeOut{opacity:0;transform:scale(0.95);filter:blur(10px);}
+  </style>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="container" id="container">
+    <div class="header">
+      <div class="circle"><span>♥</span></div>
+      <h1>HealthReach</h1>
+      <p>Your health, our priority</p>
+    </div>
+
+    <div class="tabs">
+      <button id="loginTab" class="active">Login</button>
+      <button id="signupTab">Sign Up</button>
+    </div>
+
+    <form id="form">
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Email Address" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Password" required>
+      </div>
+      <div class="input-group" id="confirmPasswordGroup" style="display:none;">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+      </div>
+      <button class="btn" type="submit" id="submitBtn">Login</button>
+      <div class="forgot-password"><a href="#">Forgot Password?</a></div>
+    </form>
+  </div>
+
+  <!-- Stylish overlay -->
+  <div id="loadingOverlay">
+    <div class="spinner" id="spinner"></div>
+    <div class="successText" id="successText">Login Successful 🎉</div>
+  </div>
+
+  <script>
+    const loginTab=document.getElementById("loginTab");
+    const signupTab=document.getElementById("signupTab");
+    const confirmPasswordGroup=document.getElementById("confirmPasswordGroup");
+    const submitBtn=document.getElementById("submitBtn");
+    const form=document.getElementById("form");
+
+    loginTab.onclick=()=>{loginTab.classList.add("active");signupTab.classList.remove("active");
+      confirmPasswordGroup.style.display="none";submitBtn.innerText="Login";}
+    signupTab.onclick=()=>{signupTab.classList.add("active");loginTab.classList.remove("active");
+      confirmPasswordGroup.style.display="block";submitBtn.innerText="Sign Up";}
+
+    form.addEventListener("submit",(e)=>{
+      e.preventDefault();
+      document.getElementById("loadingOverlay").style.display="flex";
+      const container=document.getElementById("container");
+      container.classList.add("fadeOut");
+
+      setTimeout(()=>{
+        document.getElementById("spinner").style.display="none";
+        const success=document.getElementById("successText");
+        success.classList.add("show");
+      },1200);
+
+      // Redirect to role_based.html after animation
+      setTimeout(()=>{
+        window.location.href="role_based.html";
+      },2500);
+    });
+  </script>
+</body>
+</html>
+
+

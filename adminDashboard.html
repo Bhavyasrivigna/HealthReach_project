@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthReach Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f5f7fa; color: #333; }
+    .dashboard-container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(135deg, #2c3e50, #3498db);
+      color: white;
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    .logo { text-align: center; margin-bottom: 30px; padding: 0 20px; }
+    .logo h1 { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+    .logo p { font-size: 14px; opacity: 0.8; }
+    .nav-menu { list-style: none; }
+    .nav-item { margin-bottom: 5px; }
+    .nav-link {
+      display: flex; align-items: center; padding: 15px 25px;
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      transition: all 0.3s; border-left: 3px solid transparent;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-left: 3px solid #f39c12;
+    }
+    .nav-link i { margin-right: 12px; font-size: 18px; }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      overflow: hidden;
+    }
+    .main-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <h1>HealthReach</h1>
+        <p>Medical Management System</p>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="dashboardcontent.html" class="nav-link active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+        <li class="nav-item"><a href="patient.html" class="nav-link"><i class="fas fa-user-injured"></i><span>Patient Records</span></a></li>
+        <li class="nav-item"><a href="bed.html" class="nav-link"><i class="fas fa-procedures"></i><span>Bed Management</span></a></li>
+        <li class="nav-item"><a href="pharmacy.html" class="nav-link"><i class="fas fa-pills"></i><span>Pharmacy</span></a></li>
+        <li class="nav-item"><a href="oxygen.html" class="nav-link"><i class="fas fa-lungs"></i><span>Oxygen Supply</span></a></li>
+        <li class="nav-item"><a href="room.html" class="nav-link"><i class="fas fa-hotel"></i><span>Room Management</span></a></li>
+        <li class="nav-item"><a href="bloodbank.html" class="nav-link"><i class="fas fa-hand-holding-heart"></i><span>Blood Bank</span></a></li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <iframe id="content-frame" src="dashboardcontent.html"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar navigation handling
+    const links = document.querySelectorAll('.nav-link');
+    const iframe = document.getElementById('content-frame');
+
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Update active class
+        links.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+
+        // Load page into iframe
+        const page = this.getAttribute('href');
+        iframe.src = page;
+      });
+    });
+  </script>
+</body>
+</html>
+

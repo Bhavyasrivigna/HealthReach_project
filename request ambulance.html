@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Ambulance Request</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(173, 216, 230, 0.07) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(144, 238, 144, 0.05) 0%, transparent 30%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .ambulance-icon {
+            color: #e74c3c;
+            font-size: 2.8rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .alert {
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.9), rgba(255, 105, 180, 0.8));
+            color: #8e2a4d;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.4);
+            animation: slideDown 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .alert p {
+            margin: 8px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .alert p:first-child {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .form-section, .info-section {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-section::before, .info-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #e74c3c, #f39c12, #27ae60);
+        }
+        
+        .form-section:hover, .info-section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 3px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+        }
+        
+        .required {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            width: 100%;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            z-index: -1;
+            transition: transform 0.5s ease;
+            transform: scaleX(0);
+            transform-origin: left;
+        }
+        
+        .btn:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        }
+        
+        .priority-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border: none;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .priority-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .priority-btn.priority-1::after {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        }
+        
+        .priority-btn.priority-2::after {
+            background: linear-gradient(to bottom, #f39c12, #d68910);
+        }
+        
+        .priority-btn.priority-3::after {
+            background: linear-gradient(to bottom, #27ae60, #229954);
+        }
+        
+        .priority-btn:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .priority-btn:hover::after {
+            width: 10px;
+        }
+        
+        .priority-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+        
+        .priority-time {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .priority-1 .priority-time {
+            color: #e74c3c;
+        }
+        
+        .priority-2 .priority-time {
+            color: #f39c12;
+        }
+        
+        .priority-3 .priority-time {
+            color: #27ae60;
+        }
+        
+        .priority-btn p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        .contacts-section {
+            margin-top: 40px;
+        }
+        
+        .contact-card {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+        
+        .contact-card.emergency::before {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        }
+        
+        .contact-card.transport::before {
+            background: linear-gradient(to bottom, #f39c12, #d68910);
+        }
+        
+        .contact-card.info::before {
+            background: linear-gradient(to bottom, #27ae60, #229954);
+        }
+        
+        .contact-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .contact-icon {
+            font-size: 1.8rem;
+            margin-right: 20px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-card.emergency .contact-icon {
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+        }
+        
+        .contact-card.transport .contact-icon {
+            background: linear-gradient(145deg, #f39c12, #d68910);
+        }
+        
+        .contact-card.info .contact-icon {
+            background: linear-gradient(145deg, #27ae60, #229954);
+        }
+        
+        .contact-details h4 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .contact-details p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+            font-weight: 500;
+        }
+        
+        .alert-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 25px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.5);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+            max-width: 400px;
+        }
+        
+        .alert-notification .alert-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .alert-notification .alert-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .divider {
+            height: 3px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 30px 0;
+            border-radius: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .ambulance-icon {
+                font-size: 2rem;
+            }
+            
+            .contact-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .contact-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .alert-notification {
+                max-width: 90%;
+                right: 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-ambulance ambulance-icon"></i> Emergency Ambulance Request</h1>
+            <p>For life-threatening emergencies, please call 911 immediately</p>
+        </div>
+        
+        <div class="alert">
+            <p><i class="fas fa-phone-alt"></i> Emergency Hotline: 911</p>
+            <p>If you are experiencing a life-threatening emergency, please call 911 immediately.</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2 class="section-title">Emergency Request Details</h2>
+                <form id="emergencyForm">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name <span class="required">*</span></label>
+                        <input type="text" id="patientName" name="patientName" required placeholder="Enter patient's full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactNumber">Contact Number <span class="required">*</span></label>
+                        <input type="tel" id="contactNumber" name="contactNumber" required placeholder="(123) 456-7890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="emergencyType">Emergency Type <span class="required">*</span></label>
+                        <select id="emergencyType" name="emergencyType" required>
+                            <option value="">Select Emergency Type</option>
+                            <option value="cardiac">Cardiac Arrest</option>
+                            <option value="breathing">Breathing Difficulty</option>
+                            <option value="stroke">Stroke</option>
+                            <option value="trauma">Major Trauma</option>
+                            <option value="bleeding">Severe Bleeding</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Current Location <span class="required">*</span></label>
+                        <input type="text" id="location" name="location" required placeholder="Enter your current address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptoms">Additional Details</label>
+                        <textarea id="symptoms" name="symptoms" rows="3" placeholder="Describe symptoms or additional information..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn">
+                        <i class="fas fa-ambulance"></i> Request Emergency Ambulance
+                    </button>
+                </form>
+            </div>
+            
+            <div class="info-section">
+                <h2 class="section-title">Response Times</h2>
+                
+                <button class="priority-btn priority-1" onclick="showPriorityDetails(1)">
+                    <div class="priority-title">Priority 1: Life-Threatening</div>
+                    <div class="priority-time"><i class="fas fa-clock"></i> &lt; 8 minutes</div>
+                    <p>For cardiac arrest, severe trauma, stroke, and other life-threatening conditions.</p>
+                </button>
+                
+                <button class="priority-btn priority-2" onclick="showPriorityDetails(2)">
+                    <div class="priority-title">Priority 2: Urgent</div>
+                    <div class="priority-time"><i class="fas fa-clock"></i> 8 - 15 minutes</div>
+                    <p>For serious but not immediately life-threatening conditions.</p>
+                </button>
+                
+                <button class="priority-btn priority-3" onclick="showPriorityDetails(3)">
+                    <div class="priority-title">Priority 3: Non-Emergency</div>
+                    <div class="priority-time"><i class="fas fa-clock"></i> 15 - 30 minutes</div>
+                    <p>For minor injuries and non-urgent medical issues.</p>
+                </button>
+                
+                <div class="divider"></div>
+                
+                <div class="contacts-section">
+                    <h2 class="section-title">Emergency Contacts</h2>
+                    
+                    <div class="contact-card emergency">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>911</h4>
+                            <p>For life-threatening emergencies</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card transport">
+                        <div class="contact-icon">
+                            <i class="fas fa-ambulance"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>(555) 123-HELP</h4>
+                            <p>Non-emergency medical transport</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card info">
+                        <div class="contact-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>(555) 123-INFO</h4>
+                            <p>Medical information hotline</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Emergency Medical Services. All rights reserved.</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> Your ambulance request has been submitted successfully!
+    </div>
+    
+    <div class="alert-notification" id="alertNotification">
+        <div class="alert-title">
+            <i class="fas fa-ambulance"></i>
+            <span>Emergency Ambulance Dispatched!</span>
+        </div>
+        <div class="alert-message">
+            An ambulance is on its way to your location. Please stay on the line and follow any instructions provided by the dispatcher.
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('emergencyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const patientName = document.getElementById('patientName').value;
+            const contactNumber = document.getElementById('contactNumber').value;
+            const emergencyType = document.getElementById('emergencyType').value;
+            const location = document.getElementById('location').value;
+            const symptoms = document.getElementById('symptoms').value;
+            
+            // Basic validation
+            if (!patientName || !contactNumber || !emergencyType || !location) {
+                // Create error notification
+                const errorNotification = document.createElement('div');
+                errorNotification.className = 'notification';
+                errorNotification.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                errorNotification.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all required fields';
+                document.body.appendChild(errorNotification);
+                
+                // Show notification
+                errorNotification.style.display = 'block';
+                
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                    errorNotification.style.display = 'none';
+                    setTimeout(() => {
+                        document.body.removeChild(errorNotification);
+                    }, 500);
+                }, 3000);
+                
+                return;
+            }
+            
+            // In a real application, you would send this data to a server
+            console.log('Emergency Request Submitted:', {
+                patientName,
+                contactNumber,
+                emergencyType,
+                location,
+                symptoms
+            });
+            
+            // Show alert notification
+            const alertNotification = document.getElementById('alertNotification');
+            alertNotification.style.display = 'block';
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                alertNotification.style.display = 'none';
+            }, 5000);
+            
+            // Reset form
+            this.reset();
+        });
+        
+        // Add dynamic effects to form elements
+        const formInputs = document.querySelectorAll('input, select, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Function to show priority details (for demonstration)
+        function showPriorityDetails(priority) {
+            let message = "";
+            let title = "";
+            
+            if (priority === 1) {
+                title = "Priority 1: Life-Threatening";
+                message = "Life-threatening emergencies receive the highest priority with an average response time of less than 8 minutes. These include cardiac arrest, severe trauma, stroke, and other critical conditions.";
+            } else if (priority === 2) {
+                title = "Priority 2: Urgent";
+                message = "Urgent but not immediately life-threatening conditions have an average response time of 8-15 minutes. These include serious injuries that require prompt medical attention.";
+            } else if (priority === 3) {
+                title = "Priority 3: Non-Emergency";
+                message = "Non-emergency situations have an average response time of 15-30 minutes. These include minor injuries and medical issues that are not time-sensitive.";
+            }
+            
+            // Create info notification
+            const infoNotification = document.createElement('div');
+            infoNotification.className = 'notification';
+            infoNotification.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            infoNotification.innerHTML = `<strong>${title}</strong><br>${message}`;
+            document.body.appendChild(infoNotification);
+            
+            // Show notification
+            infoNotification.style.display = 'block';
+            
+            // Hide notification after 4 seconds
+            setTimeout(() => {
+                infoNotification.style.display = 'none';
+                setTimeout(() => {
+                    document.body.removeChild(infoNotification);
+                }, 500);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

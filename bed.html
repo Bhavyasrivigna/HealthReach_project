@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Bed Management Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --occupied-red: #e74c3c;
+            --available-green: #2ecc71;
+            --maintenance-yellow: #f39c12;
+            --light-gray: #f5f7fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-icon {
+            position: relative;
+            font-size: 1.2rem;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .notification-icon:hover {
+            color: var(--primary-blue);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--occupied-red);
+            color: white;
+            font-size: 0.6rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .profile-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .dashboard-title p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+        .assign-bed-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .assign-bed-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .assign-bed-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .total-beds .card-icon {
+            background-color: #e3f2fd;
+            color: var(--primary-blue);
+        }
+
+        .occupied .card-icon {
+            background-color: #ffebee;
+            color: var(--occupied-red);
+        }
+
+        .available .card-icon {
+            background-color: #e8f5e9;
+            color: var(--available-green);
+        }
+
+        .occupancy-rate .card-icon {
+            background-color: #e3f2fd;
+            color: var(--primary-blue);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-beds .card-value {
+            color: #2c3e50;
+        }
+
+        .occupied .card-value {
+            color: var(--occupied-red);
+        }
+
+        .available .card-value {
+            color: var(--available-green);
+        }
+
+        .occupancy-rate .card-value {
+            color: var(--primary-blue);
+        }
+
+        .progress-circle {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin-top: 0.5rem;
+        }
+
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 6;
+        }
+
+        .progress-circle .bg {
+            stroke: #e6e6e6;
+        }
+
+        .progress-circle .progress {
+            stroke: var(--primary-blue);
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            stroke-dasharray: 157;
+            stroke-dashoffset: 48.53; /* 69% of 157 */
+        }
+
+        .progress-circle .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Ward Filter Section */
+        .ward-filter {
+            margin-bottom: 2rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0;
+        }
+
+        .filter-tab {
+            padding: 0.75rem 1.25rem;
+            background-color: transparent;
+            border: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .filter-tab:hover {
+            color: #555;
+            background-color: #f8f9fa;
+        }
+
+        .filter-tab.active {
+            color: white;
+            background-color: var(--primary-blue);
+        }
+
+        /* Ward Summary Cards (for All Wards view) */
+        .ward-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .ward-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .ward-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ward-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .ward-occupancy {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar-container {
+            height: 10px;
+            background-color: #e6e6e6;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-blue);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .ward-counters {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .counter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .counter-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .counter-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .available .counter-value {
+            color: var(--available-green);
+        }
+
+        .occupied .counter-value {
+            color: var(--occupied-red);
+        }
+
+        /* Bed Details Table (for specific ward view) */
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .bed-count {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-occupied .status-indicator {
+            background-color: var(--occupied-red);
+        }
+
+        .status-available .status-indicator {
+            background-color: var(--available-green);
+        }
+
+        .status-maintenance .status-indicator {
+            background-color: var(--maintenance-yellow);
+        }
+
+        .status-text {
+            font-weight: 500;
+        }
+
+        .status-occupied .status-text {
+            color: var(--occupied-red);
+        }
+
+        .status-available .status-text {
+            color: var(--available-green);
+        }
+
+        .status-maintenance .status-text {
+            color: var(--maintenance-yellow);
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: var(--occupied-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filter-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .ward-details {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="nav-container">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search patients, rooms, medicines…">
+            </div>
+            <div class="nav-icons">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-avatar">SW</div>
+                    <div class="profile-text">Dr. Sarah Wilson<br><small>Hospital Administrator</small></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Overview -->
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Bed Management</h1>
+                <p>Monitor and manage bed allocation across all wards</p>
+            </div>
+            <button class="assign-bed-btn" id="assignBedBtn">
+                <i class="fas fa-plus-circle"></i> Assign Bed
+            </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card total-beds">
+                <div class="card-header">
+                    <span class="card-title">Total Beds</span>
+                    <div class="card-icon">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                </div>
+                <div class="card-value">270</div>
+            </div>
+
+            <div class="summary-card occupied">
+                <div class="card-header">
+                    <span class="card-title">Occupied</span>
+                    <div class="card-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="card-value">187</div>
+            </div>
+
+            <div class="summary-card available">
+                <div class="card-header">
+                    <span class="card-title">Available</span>
+                    <div class="card-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <div class="card-value">83</div>
+            </div>
+
+            <div class="summary-card occupancy-rate">
+                <div class="card-header">
+                    <span class="card-title">Occupancy Rate</span>
+                    <div class="card-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+                <div class="card-value">69%</div>
+                <div class="progress-circle">
+                    <svg viewBox="0 0 50 50">
+                        <circle class="bg" cx="25" cy="25" r="22.5"></circle>
+                        <circle class="progress" cx="25" cy="25" r="22.5"></circle>
+                    </svg>
+                    <div class="text">69%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ward Filter Section -->
+        <div class="ward-filter">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-ward="all">All Wards</button>
+                <button class="filter-tab" data-ward="icu">ICU</button>
+                <button class="filter-tab" data-ward="general">General</button>
+                <button class="filter-tab" data-ward="private">Private</button>
+                <button class="filter-tab" data-ward="emergency">Emergency</button>
+            </div>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <div id="contentArea">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Ward and bed data
+        const wardData = [
+            {
+                id: 'icu',
+                name: 'ICU Ward',
+                total: 50,
+                occupied: 38,
+                beds: [
+                    { id: 'ICU-001', patient: 'John Doe', status: 'occupied', equipment: 'Ventilator, Monitor' },
+                    { id: 'ICU-002', patient: null, status: 'available', equipment: 'Monitor' },
+                    { id: 'ICU-003', patient: 'Mary Smith', status: 'occupied', equipment: 'Ventilator, Monitor, Defibrillator' },
+                    { id: 'ICU-004', patient: null, status: 'maintenance', equipment: 'Monitor' }
+                ]
+            },
+            {
+                id: 'general',
+                name: 'General Ward',
+                total: 120,
+                occupied: 89,
+                beds: [
+                    { id: 'GEN-001', patient: 'Robert Johnson', status: 'occupied', equipment: 'Monitor' },
+                    { id: 'GEN-002', patient: null, status: 'available', equipment: 'Monitor' },
+                    { id: 'GEN-003', patient: 'Emily Davis', status: 'occupied', equipment: 'Monitor' },
+                    { id: 'GEN-004', patient: null, status: 'available', equipment: 'Monitor' },
+                    { id: 'GEN-005', patient: 'Michael Wilson', status: 'occupied', equipment: 'Monitor, IV Pump' },
+                    { id: 'GEN-006', patient: null, status: 'maintenance', equipment: 'Monitor' }
+                ]
+            },
+            {
+                id: 'private',
+                name: 'Private Ward',
+                total: 70,
+                occupied: 45,
+                beds: [
+                    { id: 'PRI-001', patient: 'James Brown', status: 'occupied', equipment: 'Monitor, TV, Phone' },
+                    { id: 'PRI-002', patient: null, status: 'available', equipment: 'Monitor, TV, Phone' },
+                    { id: 'PRI-003', patient: 'Jennifer Taylor', status: 'occupied', equipment: 'Monitor, TV, Phone' },
+                    { id: 'PRI-004', patient: null, status: 'available', equipment: 'Monitor, TV, Phone' }
+                ]
+            },
+            {
+                id: 'emergency',
+                name: 'Emergency Ward',
+                total: 30,
+                occupied: 15,
+                beds: [
+                    { id: 'ER-001', patient: 'David Miller', status: 'occupied', equipment: 'Monitor, Defibrillator' },
+                    { id: 'ER-002', patient: null, status: 'available', equipment: 'Monitor' },
+                    { id: 'ER-003', patient: 'Sarah Anderson', status: 'occupied', equipment: 'Monitor, IV Pump' },
+                    { id: 'ER-004', patient: null, status: 'available', equipment: 'Monitor' }
+                ]
+            }
+        ];
+
+        // DOM elements
+        const contentArea = document.getElementById('contentArea');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const assignBedBtn = document.getElementById('assignBedBtn');
+
+        // Initialize the dashboard
+        function initDashboard() {
+            renderWardSummaries();
+            setupEventListeners();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter tab clicks
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active tab
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Get ward type
+                    const wardType = tab.getAttribute('data-ward');
+                    
+                    // Render appropriate content
+                    if (wardType === 'all') {
+                        renderWardSummaries();
+                    } else {
+                        renderBedTable(wardType);
+                    }
+                });
+            });
+
+            // Assign bed button click
+            assignBedBtn.addEventListener('click', () => {
+                alert('Assigning bed functionality here');
+            });
+        }
+
+        // Render ward summaries (for "All Wards" view)
+        function renderWardSummaries() {
+            // Clear content area
+            contentArea.innerHTML = '';
+            
+            // Create ward details container
+            const wardDetailsContainer = document.createElement('div');
+            wardDetailsContainer.className = 'ward-details';
+            
+            // Render each ward
+            wardData.forEach(ward => {
+                const available = ward.total - ward.occupied;
+                const occupancyPercentage = Math.round((ward.occupied / ward.total) * 100);
+                
+                const wardCard = document.createElement('div');
+                wardCard.className = 'ward-card';
+                wardCard.setAttribute('data-ward', ward.id);
+                wardCard.innerHTML = `
+                    <h3 class="ward-title">${ward.name}</h3>
+                    <p class="ward-occupancy">${ward.occupied}/${ward.total} occupied</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: ${occupancyPercentage}%"></div>
+                    </div>
+                    <div class="ward-counters">
+                        <div class="counter available">
+                            <span class="counter-value">${available}</span>
+                            <span class="counter-label">Available</span>
+                        </div>
+                        <div class="counter occupied">
+                            <span class="counter-value">${ward.occupied}</span>
+                            <span class="counter-label">Occupied</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to navigate to ward details
+                wardCard.addEventListener('click', () => {
+                    // Update active tab
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    const targetTab = document.querySelector(`.filter-tab[data-ward="${ward.id}"]`);
+                    if (targetTab) {
+                        targetTab.classList.add('active');
+                    }
+                    
+                    // Render bed table
+                    renderBedTable(ward.id);
+                });
+                
+                wardDetailsContainer.appendChild(wardCard);
+            });
+            
+            contentArea.appendChild(wardDetailsContainer);
+        }
+
+        // Render bed table (for specific ward view)
+        function renderBedTable(wardType) {
+            // Clear content area
+            contentArea.innerHTML = '';
+            
+            // Find ward data
+            const ward = wardData.find(w => w.id === wardType);
+            if (!ward) return;
+            
+            // Create table container
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-container';
+            
+            // Create table header
+            const tableHeader = document.createElement('div');
+            tableHeader.className = 'table-header';
+            tableHeader.innerHTML = `
+                <h2 class="table-title">${ward.name}</h2>
+                <span class="bed-count">${ward.total} beds</span>
+            `;
+            
+            // Create table
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Bed ID</th>
+                        <th>Patient</th>
+                        <th>Status</th>
+                        <th>Equipment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bedTableBody">
+                    <!-- Table rows will be dynamically generated here -->
+                </tbody>
+            `;
+            
+            // Add table header and table to container
+            tableContainer.appendChild(tableHeader);
+            tableContainer.appendChild(table);
+            
+            // Add container to content area
+            contentArea.appendChild(tableContainer);
+            
+            // Get table body
+            const bedTableBody = document.getElementById('bedTableBody');
+            
+            // Render each bed
+            ward.beds.forEach(bed => {
+                const row = document.createElement('tr');
+                
+                // Create status HTML
+                let statusClass = '';
+                let statusText = '';
+                
+                if (bed.status === 'occupied') {
+                    statusClass = 'status-occupied';
+                    statusText = 'Occupied';
+                } else if (bed.status === 'available') {
+                    statusClass = 'status-available';
+                    statusText = 'Available';
+                } else if (bed.status === 'maintenance') {
+                    statusClass = 'status-maintenance';
+                    statusText = 'Maintenance';
+                }
+                
+                // Create actions HTML
+                let actionsHtml = '';
+                
+                if (bed.status === 'occupied') {
+                    actionsHtml = `
+                        <button class="btn btn-danger" onclick="dischargeBed('${ward.id}', '${bed.id}')">Discharge</button>
+                        <button class="btn btn-secondary" onclick="showBedDetails('${ward.id}', '${bed.id}')">Details</button>
+                    `;
+                } else if (bed.status === 'available') {
+                    actionsHtml = `
+                        <button class="btn btn-primary" onclick="assignBedToPatient('${ward.id}', '${bed.id}')">Assign</button>
+                        <button class="btn btn-secondary" onclick="showBedDetails('${ward.id}', '${bed.id}')">Details</button>
+                    `;
+                } else if (bed.status === 'maintenance') {
+                    actionsHtml = `
+                        <button class="btn btn-secondary" onclick="showBedDetails('${ward.id}', '${bed.id}')">Details</button>
+                    `;
+                }
+                
+                row.innerHTML = `
+                    <td>${bed.id}</td>
+                    <td>${bed.patient || '-'}</td>
+                    <td>
+                        <div class="status ${statusClass}">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">${statusText}</span>
+                        </div>
+                    </td>
+                    <td>${bed.equipment}</td>
+                    <td>
+                        <div class="actions">
+                            ${actionsHtml}
+                        </div>
+                    </td>
+                `;
+                
+                bedTableBody.appendChild(row);
+            });
+        }
+
+        // Function to discharge a bed
+        function dischargeBed(wardId, bedId) {
+            alert(`Discharging patient from bed ${bedId}`);
+            
+            // Find the ward and bed
+            const ward = wardData.find(w => w.id === wardId);
+            if (!ward) return;
+            
+            const bed = ward.beds.find(b => b.id === bedId);
+            if (!bed) return;
+            
+            // Update bed status
+            if (bed.status === 'occupied') {
+                bed.status = 'available';
+                bed.patient = null;
+                ward.occupied -= 1;
+            }
+            
+            // Re-render the table
+            renderBedTable(wardId);
+            
+            // Update summary cards
+            updateSummaryCards();
+        }
+
+        // Function to assign a bed
+        function assignBedToPatient(wardId, bedId) {
+            alert(`Assigning patient to bed ${bedId}`);
+            
+            // Find the ward and bed
+            const ward = wardData.find(w => w.id === wardId);
+            if (!ward) return;
+            
+            const bed = ward.beds.find(b => b.id === bedId);
+            if (!bed) return;
+            
+            // Update bed status
+            if (bed.status === 'available') {
+                bed.status = 'occupied';
+                // Assign a dummy patient
+                const dummyPatients = ['Alex Johnson', 'Taylor Smith', 'Jordan Williams', 'Casey Brown', 'Morgan Davis'];
+                bed.patient = dummyPatients[Math.floor(Math.random() * dummyPatients.length)];
+                ward.occupied += 1;
+            }
+            
+            // Re-render the table
+            renderBedTable(wardId);
+            
+            // Update summary cards
+            updateSummaryCards();
+        }
+
+        // Function to show bed details
+        function showBedDetails(wardId, bedId) {
+            // Find the ward and bed
+            const ward = wardData.find(w => w.id === wardId);
+            if (!ward) return;
+            
+            const bed = ward.beds.find(b => b.id === bedId);
+            if (!bed) return;
+            
+            let statusText = '';
+            if (bed.status === 'occupied') {
+                statusText = 'Occupied';
+            } else if (bed.status === 'available') {
+                statusText = 'Available';
+            } else if (bed.status === 'maintenance') {
+                statusText = 'Maintenance';
+            }
+            
+            alert(`Bed Details:\n\nBed ID: ${bed.id}\nPatient: ${bed.patient || 'None'}\nStatus: ${statusText}\nEquipment: ${bed.equipment}`);
+        }
+
+        // Function to update summary cards
+        function updateSummaryCards() {
+            // Calculate totals
+            const totalBeds = wardData.reduce((sum, ward) => sum + ward.total, 0);
+            const occupiedBeds = wardData.reduce((sum, ward) => sum + ward.occupied, 0);
+            const availableBeds = totalBeds - occupiedBeds;
+            const occupancyRate = Math.round((occupiedBeds / totalBeds) * 100);
+            
+            // Update DOM elements
+            document.querySelector('.total-beds .card-value').textContent = totalBeds;
+            document.querySelector('.occupied .card-value').textContent = occupiedBeds;
+            document.querySelector('.available .card-value').textContent = availableBeds;
+            document.querySelector('.occupancy-rate .card-value').textContent = occupancyRate + '%';
+            
+            // Update progress circle
+            const progressCircle = document.querySelector('.progress-circle .progress');
+            const progressText = document.querySelector('.progress-circle .text');
+            
+            if (progressCircle && progressText) {
+                const circumference = 2 * Math.PI * 22.5; // radius is 22.5
+                const offset = circumference - (occupancyRate / 100) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+                progressText.textContent = occupancyRate + '%';
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

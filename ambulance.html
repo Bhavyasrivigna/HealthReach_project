@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Medical Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        /* Page fade-in animation */
+      body {
+           opacity: 0;
+           transition: opacity 1s ease-in; /* 1 second fade */
+        }
+
+     body.fade-in {
+          opacity: 1;
+        } 
+
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4a90e2, #3a7bc8);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 4s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .alert-section {
+            background-color: #ffecf2;
+            padding: 40px 25px;
+            text-align: center;
+            border-bottom: 1px solid #f0d5dc;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 49%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 51%);
+            background-size: 20px 20px;
+            animation: shine 3s infinite linear;
+            opacity: 0.5;
+        }
+        
+        @keyframes shine {
+            0% { background-position: -20px -20px; }
+            100% { background-position: 100% 100%; }
+        }
+        
+        .alert-title {
+            color: #d32f2f;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            position: relative;
+            z-index: 1;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px rgba(211, 47, 47, 0.5); }
+            to { text-shadow: 0 0 10px rgba(211, 47, 47, 0.8); }
+        }
+        
+        .alert-description {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .action-section {
+            padding: 30px 25px;
+            text-align: center;
+        }
+        
+        .call-button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 30px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .call-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .call-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .call-button:hover {
+            background-color: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
+        }
+        
+        .call-button:active {
+            transform: translateY(0);
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+            line-height: 1.5;
+        }
+        
+        .services-section {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .service-card {
+            flex: 1;
+            min-width: 300px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #7b1fa2, #388e3c);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+        
+        .service-card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .service-title .icon {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .service-details {
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        
+        .service-detail-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .service-detail-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .detail-icon {
+            color: #4a90e2;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .detail-text {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .request-button {
+            background-color: #7b1fa2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(123, 31, 162, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .request-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .request-button:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .request-button:hover {
+            background-color: #6a1b9a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(123, 31, 162, 0.4);
+        }
+        
+        .track-button {
+            background-color: #388e3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .track-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .track-button:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .track-button:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(56, 142, 60, 0.4);
+        }
+        
+        .why-choose-section {
+            padding: 30px 25px;
+            background-color: #f9f9f9;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #4a90e2, #7b1fa2);
+            border-radius: 3px;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(74, 144, 226, 0.1) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feature:hover::before {
+            opacity: 1;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
+            background-color: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover .feature-icon {
+            background-color: #4a90e2;
+            transform: scale(1.1);
+        }
+        
+        .feature-icon svg {
+            width: 30px;
+            height: 30px;
+            color: #4a90e2;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover .feature-icon svg {
+            color: white;
+        }
+        
+        .feature-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .feature:hover .feature-title {
+            color: #4a90e2;
+        }
+        
+        .feature-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* Enhanced ambulance icon */
+        .ambulance-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .ambulance-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: #7b1fa2;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover .ambulance-icon svg {
+            fill: #6a1b9a;
+            transform: scale(1.1);
+        }
+        
+        /* Enhanced tracking icon */
+        .tracking-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .tracking-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: #388e3c;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover .tracking-icon svg {
+            fill: #2e7d32;
+            transform: scale(1.1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .header p {
+                font-size: 16px;
+            }
+            
+            .alert-title {
+                font-size: 24px;
+            }
+            
+            .features {
+                gap: 15px;
+            }
+            
+            .feature {
+                min-width: 180px;
+                max-width: 280px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 26px;
+            }
+            
+            .header p {
+                font-size: 15px;
+            }
+            
+            .alert-section {
+                padding: 30px 20px;
+            }
+            
+            .alert-title {
+                font-size: 22px;
+            }
+            
+            .alert-description {
+                font-size: 15px;
+            }
+            
+            .action-section {
+                padding: 25px 20px;
+            }
+            
+            .call-button {
+                font-size: 16px;
+                padding: 14px 25px;
+            }
+            
+            .services-section {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .service-card {
+                min-width: 100%;
+                padding: 20px;
+            }
+            
+            .service-title {
+                font-size: 20px;
+            }
+            
+            .service-detail-item {
+                margin-bottom: 10px;
+            }
+            
+            .detail-text {
+                font-size: 15px;
+            }
+            
+            .request-button, .track-button {
+                font-size: 15px;
+                padding: 12px 20px;
+            }
+            
+            .why-choose-section {
+                padding: 25px 20px;
+            }
+            
+            .section-title {
+                font-size: 22px;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .feature-icon {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .feature-icon svg {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .feature-title {
+                font-size: 17px;
+            }
+            
+            .feature-description {
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                border-radius: 8px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header p {
+                font-size: 14px;
+            }
+            
+            .alert-section {
+                padding: 25px 15px;
+            }
+            
+            .alert-title {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .alert-description {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+            
+            .action-section {
+                padding: 20px 15px;
+            }
+            
+            .call-button {
+                font-size: 15px;
+                padding: 12px 20px;
+            }
+            
+            .disclaimer {
+                font-size: 13px;
+            }
+            
+            .service-card {
+                padding: 15px;
+            }
+            
+            .service-title {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+            
+            .ambulance-icon, .tracking-icon {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .service-detail-item {
+                margin-bottom: 8px;
+            }
+            
+            .detail-text {
+                font-size: 14px;
+            }
+            
+            .request-button, .track-button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            
+            .why-choose-section {
+                padding: 20px 15px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .feature {
+                padding: 15px;
+            }
+            
+            .feature-icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 10px;
+            }
+            
+            .feature-icon svg {
+                width: 25px;
+                height: 25px;
+            }
+            
+            .feature-title {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .feature-description {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .header p {
+                font-size: 13px;
+            }
+            
+            .alert-title {
+                font-size: 18px;
+            }
+            
+            .alert-description {
+                font-size: 13px;
+            }
+            
+            .call-button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            
+            .service-title {
+                font-size: 17px;
+            }
+            
+            .detail-text {
+                font-size: 13px;
+            }
+            
+            .request-button, .track-button {
+                font-size: 13px;
+                padding: 9px 12px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+            }
+            
+            .feature-title {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Emergency Medical Services</h1>
+            <p>24/7 Emergency Response & Real-time Tracking</p>
+        </div>
+        
+        <div class="alert-section">
+            <div class="alert-title">Life-Threatening Emergency?</div>
+            <div class="alert-description">
+                For non-life-threatening situations, you can use this service for medical assistance and real-time tracking.
+            </div>
+        </div>
+        
+        <div class="action-section">
+            <button class="call-button" onclick="window.location.href='tel:911';">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                Call 911 Now
+            </button>
+            
+            <div class="disclaimer">
+                If you're experiencing a life-threatening emergency, call 911 immediately. This service is for urgent medical situations.
+            </div>
+        </div>
+        
+        <div class="services-section">
+            <div class="service-card">
+                <div class="service-title">
+                    <div class="ambulance-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                            <path d="M7.5 9.5h1v1h-1zm8 0h1v1h-1z"/>
+                        </svg>
+                    </div>
+                    Request Ambulance
+                </div>
+                <div class="service-details">
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Average response time: 8-12 minutes</span>
+                    </div>
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Certified emergency medical technicians</span>
+                    </div>
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Advanced life support equipment</span>
+                    </div>
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">24/7 availability</span>
+                    </div>
+                </div>
+                <button class="request-button" onclick="window.location.href='request ambulance.html';">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Request Emergency Transport
+                </button>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-title">
+                    <div class="tracking-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            <path d="M12 7.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
+                            <path d="M19 14h-2c0 1.65-1.35 3-3 3h-4c-1.65 0-3-1.35-3-3H5c0 2.76 2.24 5 5 5h4c2.76 0 5-2.24 5-5z"/>
+                            <path d="M16 16h2v2h-2z"/>
+                            <path d="M6 16h2v2H6z"/>
+                        </svg>
+                    </div>
+                    Track Ambulance
+                </div>
+                <div class="service-details">
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Real-time GPS tracking</span>
+                    </div>
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Estimated time of arrival</span>
+                    </div>
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Ambulance status updates</span>
+                    </div>
+                    <div class="service-detail-item">
+                        <span class="detail-icon">•</span>
+                        <span class="detail-text">Direct communication with medical team</span>
+                    </div>
+                </div>
+                <button class="track-button" onclick="window.location.href='gpsweb.html';">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14m-7-7v14"></path>
+                    </svg>
+                    View Live Tracking
+                </button>
+            </div>
+        </div>
+        
+        <div class="why-choose-section">
+            <h2 class="section-title">Why Choose Our Emergency Services?</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Fast Response</h3>
+                    <p class="feature-description">Our average response time is 8-12 minutes, ensuring you get the help you need quickly.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Professional Care</h3>
+                    <p class="feature-description">Our team consists of certified emergency medical technicians with advanced training.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Real-time Tracking</h3>
+                    <p class="feature-description">Track your ambulance in real-time and get accurate arrival estimates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("fade-in");
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hospital Services</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --accent: #4f8cff;
+  --highlight: #ff9800;
+  --success: #43a047;
+  --danger: #e53935;
+  --info: #6c63ff;
+}
+body { margin: 0; background: var(--bg); font-family: sans-serif; }
+header { padding: 0.75rem 1rem; background: white; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
+header h1 { margin: 0; font-size: 1.2rem; }
+.toggle-container { display: flex; gap: 1rem; }
+.toggle-label { font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
+.toggle-switch { position: relative; width: 50px; height: 24px; }
+.toggle-switch input { display: none; }
+.slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 24px; cursor: pointer; transition: 0.3s; }
+.slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+input:checked + .slider { background-color: var(--success); }
+input:checked + .slider:before { transform: translateX(26px); }
+.search-bar { padding: 0.75rem 1rem; background: white; border-bottom: 1px solid #ccc; display: flex; gap: 0.5rem; }
+.search-bar input { flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; }
+.search-bar button { padding: 0.6rem 1rem; border: none; background: linear-gradient(45deg, var(--accent), var(--highlight)); color: white; border-radius: 4px; font-weight: bold; cursor: pointer; }
+#map { width: 100%; height: 45vh; margin: 1rem auto; border-radius: 8px; border: 2px solid #ccc; }
+#results { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+.hospital-card { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.hospital-header { display: flex; justify-content: space-between; align-items: center; }
+.badge { padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; background: #e0f2f1; color: var(--success); }
+.meta { font-size: 0.85rem; color: #555; display: flex; gap: 1rem; margin-top: 0.3rem; }
+.meta i { color: var(--accent); }
+.address { font-size: 0.85rem; color: #666; margin: 0.3rem 0; }
+.availability { display: flex; gap: 1rem; margin-top: 0.3rem; }
+.availability span { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; }
+.bed-icon { color: var(--success); }
+.oxygen-icon { color: var(--info); }
+.doctors { font-size: 0.85rem; margin-top: 0.3rem; }
+.doctor { color: #444; }
+.hospital-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.hospital-actions button { flex: 1; padding: 0.4rem; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; color: white; display: flex; align-items: center; gap: 0.3rem; justify-content: center; }
+.btn-schedule { background: var(--accent); }
+.btn-ambulance { background: var(--danger); }
+.btn-call { background: var(--success); }
+.btn-directions { background: #616161; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+.modal { background: white; padding: 1rem; border-radius: 8px; width: 90%; max-width: 400px; }
+.modal h2 { margin-top: 0; }
+.modal form { display: flex; flex-direction: column; gap: 0.5rem; }
+.modal input, .modal select { padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+.modal-buttons { display: flex; justify-content: flex-end; gap: 0.5rem; }
+.modal-buttons button { padding: 0.4rem 0.8rem; border: none; border-radius: 4px; cursor: pointer; }
+.btn-cancel { background: #ccc; }
+.btn-submit { background: var(--accent); color: white; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Hospital Services</h1>
+  <div class="toggle-container">
+    <label class="toggle-label">Govt
+      <label class="toggle-switch"><input type="checkbox" id="govtToggle"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-label">Private
+      <label class="toggle-switch"><input type="checkbox" id="privateToggle"><span class="slider"></span></label>
+    </label>
+  </div>
+</header>
+
+<div class="search-bar">
+  <input id="searchInput" type="text" placeholder="Enter city or area…">
+  <button id="searchBtn">Search</button>
+</div>
+
+<div id="map"></div>
+<section id="results"></section>
+
+<!-- Schedule Modal -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal">
+    <h2>Schedule Later</h2>
+    <form id="scheduleForm">
+      <input type="text" placeholder="Your Name" required>
+      <input type="tel" placeholder="Contact Number" required>
+      <input type="date" required>
+      <div class="modal-buttons">
+        <button type="button" class="btn-cancel" onclick="closeModal('scheduleModal')">Cancel</button>
+        <button type="submit" class="btn-submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Ambulance Modal -->
+<div class="modal-overlay" id="ambulanceModal">
+  <div class="modal">
+    <h2>Request Ambulance</h2>
+    <form id="ambulanceForm">
+      <input type="text" placeholder="Your Name" required>
+      <input type="tel" placeholder="Contact Number" required>
+      <input type="text" placeholder="Pickup Location" required>
+      <select required>
+        <option value="">Select Ambulance Type</option>
+        <option>Basic</option>
+        <option>ICU</option>
+        <option>Neonatal</option>
+      </select>
+      <div class="modal-buttons">
+        <button type="button" class="btn-cancel" onclick="closeModal('ambulanceModal')">Cancel</button>
+        <button type="submit" class="btn-submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+let map = L.map('map').setView([15.9129, 79.7400], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+let markers = L.layerGroup().addTo(map);
+let lastLocation = null;
+
+const govtIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2966/2966327.png', iconSize: [28, 28] });
+const privateIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/1483/1483336.png', iconSize: [28, 28] });
+
+const doctorsList = [
+  ["Dr. Sarah Johnson", "Cardiology"], ["Dr. Michael Chen", "Emergency Medicine"],
+  ["Dr. Emily Rodriguez", "Neurology"], ["Dr. Rajesh Kumar", "Orthopedics"],
+  ["Dr. Priya Sharma", "Pediatrics"], ["Dr. Anita Desai", "Dermatology"],
+  ["Dr. Sunil Reddy", "General Surgery"], ["Dr. Kavita Menon", "Gastroenterology"]
+];
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return (R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+}
+
+function getAddress(lat, lon) {
+  return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+    .then(r => r.json()).then(d => d.display_name || `Lat: ${lat}, Lon: ${lon}`);
+}
+
+function searchHospitals(city) {
+  if (!city) return;
+  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city+', Andhra Pradesh')}`)
+    .then(r => r.json()).then(data => {
+      if (!data.length) return;
+      const { lat, lon } = data[0];
+      lastLocation = [parseFloat(lat), parseFloat(lon)];
+      map.setView(lastLocation, 13);
+      L.circle(lastLocation, { radius: 3000, color: '#4f8cff', fillOpacity: 0.1 }).addTo(map);
+
+      let filters = [];
+      if (document.getElementById('govtToggle').checked) filters.push('Government');
+      if (document.getElementById('privateToggle').checked) filters.push('Private');
+      const filterRegex = filters.length ? `[name~"${filters.join('|')}",i]` : '';
+     const query = `[out:json];
+(
+  node["amenity"="hospital"]${filterRegex}(around:3000,${lat},${lon});
+  way["amenity"="hospital"]${filterRegex}(around:3000,${lat},${lon});
+  relation["amenity"="hospital"]${filterRegex}(around:3000,${lat},${lon});
+);
+out center;
+`;
+
+
+      fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: query })
+        .then(r => r.json()).then(json => {
+          markers.clearLayers();
+          document.getElementById('results').innerHTML = '';
+          let usedNames = new Set();
+
+          json.elements.forEach(async el => {
+            const name = el.tags.name || 'Unnamed Hospital';
+            if (usedNames.has(name)) return;
+            usedNames.add(name);
+
+            const isGovt = /govt|government/i.test(name);
+            const icon = isGovt ? govtIcon : privateIcon;
+            L.marker([el.lat, el.lon], { icon }).bindPopup(name).addTo(markers);
+
+            const bedsAvailable = Math.floor(Math.random()*50)+1;
+            const oxygenAvailable = Math.floor(Math.random()*100);
+            const rating = (Math.random()*2+3).toFixed(1);
+            const reviews = Math.floor(Math.random()*200)+20;
+            const distance = calculateDistance(lastLocation[0], lastLocation[1], el.lat, el.lon);
+            const address = await getAddress(el.lat, el.lon);
+            const randomDoctors = [...doctorsList].sort(()=>0.5-Math.random()).slice(0, 3);
+
+            const card = document.createElement('div');
+            card.className = 'hospital-card';
+            card.innerHTML = `
+              <div class="hospital-header"><h3>${name}</h3><span class="badge">${isGovt?'Government':'Private'}</span></div>
+              <div class="meta"><span><i class="fas fa-map-marker-alt"></i> ${distance} km</span><span><i class="fas fa-star" style="color:gold;"></i> ${rating} (${reviews} reviews)</span></div>
+              <div class="address">${address}</div>
+              <div class="availability"><span><i class="fas fa-bed bed-icon"></i> ${bedsAvailable} of 50 beds</span><span><i class="fas fa-lungs oxygen-icon"></i> Oxygen ${oxygenAvailable}%</span></div>
+              <div class="doctors"><strong>Available Doctors:</strong>${randomDoctors.map(doc=>`<div class="doctor">${doc[0]} - ${doc[1]}</div>`).join('')}</div>
+              <div class="hospital-actions">
+                <button class="btn-schedule" onclick="openModal('scheduleModal')"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                <button class="btn-ambulance" onclick="openModal('ambulanceModal')"><i class="fas fa-ambulance"></i> Ambulance</button>
+                <button class="btn-call" onclick="alert('Calling ${name}...')"><i class="fas fa-phone-alt"></i> Call</button>
+                <button class="btn-directions" onclick="window.open('https://www.google.com/maps?q=${el.lat},${el.lon}')"><i class="fas fa-directions"></i> Directions</button>
+              </div>
+            `;
+            document.getElementById('results').appendChild(card);
+          });
+        });
+    });
+}
+
+document.getElementById('searchBtn').addEventListener('click', () => searchHospitals(document.getElementById('searchInput').value.trim()));
+
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target.classList.contains('modal-overlay')) modal.style.display = 'none'; }));
+
+document.getElementById('scheduleForm').addEventListener('submit', e => { e.preventDefault(); alert('Schedule submitted'); closeModal('scheduleModal'); });
+document.getElementById('ambulanceForm').addEventListener('submit', e => { e.preventDefault(); alert('Ambulance requested'); closeModal('ambulanceModal'); });
+</script>
+</body>
+</html>
+
+

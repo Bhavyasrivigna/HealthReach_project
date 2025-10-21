@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="4;url=home.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthReach - Splash</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #00bfff, #003366);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+       /* White Circle with Rotating Heart */
+    .circle {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: rotate 5s linear infinite;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .circle img {
+      width: 80px;
+      height: 80px;
+    }
+
+
+    .container {
+      text-align: center;
+      animation: fadeInScale 1.5s ease-out;
+ 
+    }
+
+    .logo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      opacity: 0;
+      animation-name: fadeInLogo;
+      animation-delay: 0.6s;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+      box-shadow: 0 0 25px 5px rgba(255, 255, 255, 0.8);
+      }
+
+    .logo img {
+      width: 70%;
+      animation: rotate 4s linear infinite;
+    }
+    
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 0.7s;
+    }
+
+    .tagline {
+      font-size: 1.3rem;
+      color: #dcdcdc;
+      margin-bottom: 30px;
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 0.7s;
+      
+    }
+    
+    .quote {
+      font-size: 1.0rem;
+      color: #dcdcdc;
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeIn 3s ease forwards;
+      animation-delay: 0.9s;
+      
+    }
+
+     .loader {
+      width: 40px;
+      height: 5px;
+      background-color: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+      margin: 0 auto;
+      animation: growLoader 4s ease-out forwards;
+    }
+
+    .loader::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: #ffffff;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: fillBar 4s linear forwards;
+    }
+    
+    
+     @keyframes growLoader {
+      from { width: 40px; }
+      to { width: 160px; }
+    }
+
+    @keyframes fillBar {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+     @keyframes fadeInLogo {
+      to { opacity: 1; }
+    }
+
+
+    @keyframes fadeInScale {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    
+       @keyframes fadeInlogo {
+      to { opacity: 1; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Rotating Circle with Heart -->
+  <div class="logo">
+    <img src="bule-heart.png" alt="Blue Heart Logo" />
+  </div>
+
+    <h1>HealthReach</h1>
+    <div class="tagline">Your Emergency Health Companion</div>
+  </div>
+  
+  <div class="quote">..Connecting you to healthcare..</div>
+                        
+  <!-- Scanning Line -->
+  <div class="loader">
+  </div>
+
+  <script>
+    // Auto navigate to auth.html after 4 seconds
+    setTimeout(() => {
+      window.location.href = "auth.html";
+    }, 4000);
+  </script>
+</body>
+</html>
